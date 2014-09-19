@@ -1,0 +1,234 @@
+<!-- fast access container -->
+<div class="container-fluid container-fast-access" ng-controller="FastAccessDeviceController as fastAccess">
+	<div class="row">
+		<div class="col-lg-3" ng-repeat="device in fastAccess.fastAccessModel.fastAccessDevices">
+			<!-- device container -->
+			<div class="container-fluid container-device">
+				<div class="row">
+					<div class="col-lg-7 container-device-info">
+						<div class="row">
+							<div class="col-lg-12 container-device-image"></div>
+						</div>
+						<div class="row">
+							<span class="center-block text-center">{{device.Value}}</span>
+						</div>
+					</div>
+					<div class="col-lg-3 switch-device">
+						<div class="checkbox">
+							<label>
+								<input type="checkbox" value="{{device.IsOn}}" ng-model="device.IsOn">
+								On
+							</label>
+						</div>
+					</div>
+					<div class="col-lg-2 delete-device">
+						<button type="button" class="btn btn-default btn-xs" ng-click="fastAccess.deleteDevice(device)"></button>
+					</div>
+				</div>
+				<div class="row" ng-show="fastAccess.IsValueDevice(device)">
+					<div class="col-lg-10 col-lg-offset-1 input-group range-device">
+						<input type="range" class="form-control" value="{{device.Value}}" min="0" max="100" step="1" ng-model="device.Value">
+					</div>
+				</div>
+			</div> <!-- end device -->
+		</div>
+		<div class="col-lg-3" ng-show="fastAccess.canAdd">
+			<div class="col-lg-6 col-lg-offset-3 btn-quick-access">
+				<!-- add new device -->
+				<div class="dropdown">
+				  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">+</button>
+				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+				    <li role="presentation" ng-repeat="device in fastAccess.fastAccessModel.otherDevices"><a role="menuitem" href="#" ng-click="fastAccess.addDevice(device)">{{device.Name}}</a></li>
+				  </ul>
+				</div> <!-- end add new -->
+			</div>
+		</div>
+	</div>
+</div> <!-- end fast access -->
+
+<!-- home container -->
+<div class="container-fluid container-home">
+	<div class="row">
+		<!-- room container -->
+		<div class="col-lg-8 container-fluid container-room">
+			<div class="row">
+				<div class="col-lg-5">
+					<!-- device container -->
+					<div class="container-fluid container-device">
+						<div class="row">
+							<div class="col-lg-6 container-device-info">
+								<div class="row">
+									<div class="col-lg-12 container-device-image"></div>
+								</div>
+								<div class="row">
+									<span class="center-block text-center">{{value_rd1 || 50}}</span>
+								</div>
+							</div>
+							<div class="col-lg-4 switch-device">
+								<div class="btn-group-vertical center-block">
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:true}'>on</button>
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:false}'>off</button>
+								</div>
+							</div>
+						</div>
+						<div class="row" ng-show="true">
+							<div class="col-lg-10 col-lg-offset-1 input-group range-device">
+								<input type="range" class="form-control" value="{{value_rd1 || 50}}" min="0" max="100" step="1" ng-model="value_rd1">
+							</div>
+						</div>
+					</div> <!-- end device -->
+				</div>
+				<div class="col-lg-5">
+					<!-- device container -->
+					<div class="container-fluid container-device">
+						<div class="row">
+							<div class="col-lg-6 container-device-info">
+								<div class="row">
+									<div class="col-lg-12 container-device-image"></div>
+								</div>
+								<div class="row">
+									<span class="center-block text-center">{{value_rd2 || 50}}</span>
+								</div>
+							</div>
+							<div class="col-lg-4 switch-device">
+								<div class="btn-group-vertical center-block">
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:true}'>on</button>
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:false}'>off</button>
+								</div>
+							</div>
+						</div>
+						<div class="row" ng-show="true">
+							<div class="col-lg-10 col-lg-offset-1 input-group range-device">
+								<input type="range" class="form-control" value="{{value_rd2 || 50}}" min="0" max="100" step="1" ng-model="value_rd2">
+							</div>
+						</div>
+					</div> <!-- end device -->
+				</div>
+				<a role="button" class="col-lg-2 btn btn-info" href="#/room/1">Go to room</a>
+			</div>
+			<div class="row">
+				<!-- device process container -->
+				<div class="row container-device-process">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer">00:00:12</div>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn">off</button>
+				</div> <!-- end device process -->
+				<!-- device process container -->
+				<div class="row container-device-process">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer">00:00:12</div>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn">off</button>
+				</div> <!-- end device process -->
+				<!-- device process container -->
+				<div class="row container-device-process">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer">00:00:12</div>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn">off</button>
+				</div> <!-- end device process -->
+			</div>
+		</div> <!-- end room -->
+		<!-- room container -->
+		<div class="col-lg-4 container-fluid container-room">
+			<div class="row">
+				<div class="col-lg-5">
+					<!-- device container -->
+					<div class="container-fluid container-device">
+						<div class="row">
+							<div class="col-lg-6 container-device-info">
+								<div class="row">
+									<div class="col-lg-12 container-device-image"></div>
+								</div>
+								<div class="row">
+									<span class="center-block text-center">{{value_rd1 || 50}}</span>
+								</div>
+							</div>
+							<div class="col-lg-4 switch-device">
+								<div class="btn-group-vertical center-block">
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:true}'>on</button>
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:false}'>off</button>
+								</div>
+							</div>
+						</div>
+						<div class="row" ng-show="true">
+							<div class="col-lg-10 col-lg-offset-1 input-group range-device">
+								<input type="range" class="form-control" value="{{value_rd1 || 50}}" min="0" max="100" step="1" ng-model="value_rd1">
+							</div>
+						</div>
+					</div> <!-- end device -->
+				</div>
+				<div class="col-lg-5">
+					<!-- device container -->
+					<div class="container-fluid container-device">
+						<div class="row">
+							<div class="col-lg-6 container-device-info">
+								<div class="row">
+									<div class="col-lg-12 container-device-image"></div>
+								</div>
+								<div class="row">
+									<span class="center-block text-center">{{value_rd2 || 50}}</span>
+								</div>
+							</div>
+							<div class="col-lg-4 switch-device">
+								<div class="btn-group-vertical center-block">
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:true}'>on</button>
+									<button type="button" class="btn btn-default btn-xs" ng-class='{active:false}'>off</button>
+								</div>
+							</div>
+						</div>
+						<div class="row" ng-show="true">
+							<div class="col-lg-10 col-lg-offset-1 input-group range-device">
+								<input type="range" class="form-control" value="{{value_rd2 || 50}}" min="0" max="100" step="1" ng-model="value_rd2">
+							</div>
+						</div>
+					</div> <!-- end device -->
+				</div>
+				<a role="button" class="col-lg-2 btn btn-info" href="#/room/2">Go to room</a>
+			</div>
+			<div class="row">
+				<!-- device process container -->
+				<div class="row container-device-process">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer">00:00:12</div>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn">off</button>
+				</div> <!-- end device process -->
+				<!-- device process container -->
+				<div class="row container-device-process">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer">00:00:12</div>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn">off</button>
+				</div> <!-- end device process -->
+				<!-- device process container -->
+				<div class="row container-device-process">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer">00:00:12</div>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn">off</button>
+				</div> <!-- end device process -->
+			</div>
+		</div> <!-- end room -->
+	</div>
+	<div class="row">
+		<!-- room container -->
+		<div class="col-lg-5 container-fluid container-room">
+			<div class="row">
+				<div class="col-lg-6">
+					
+				</div>
+				<div class="col-lg-6">
+					
+				</div>
+			</div>
+		</div> <!-- end room -->
+		<!-- room container -->
+		<div class="col-lg-7 container-fluid container-room">
+			<div class="row">
+				<div class="col-lg-6">
+					
+				</div>
+				<div class="col-lg-6">
+					
+				</div>
+			</div>
+		</div> <!-- end room -->
+	</div>
+</div> <!-- end home -->
+

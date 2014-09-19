@@ -1,0 +1,1 @@
+sass --watch app/styles/main.less:app/styles/main.css

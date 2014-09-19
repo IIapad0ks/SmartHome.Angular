@@ -1,0 +1,139 @@
+<!-- device container -->
+<div class="container-fluid container-device-details">
+	<div class="row">
+		<div class="col-lg-2 container-device-image"></div>
+		<div class="col-lg-9 col-lg-offset-1">
+			<div class="row">
+				<label class="col-lg-4 lead">Name</label>
+				<label class="col-lg-6 lead">{{device.name || "My room conditioner"}}</label>
+				<button type="button" class="col-lg-2 btn btn-warning">edit</button>
+			</div>
+			<div class="row">
+				<label class="col-lg-4 lead">Name</label>
+				<div class="col-lg-6">
+					<input type="text" class="form-control" placeholder="Enter new device name" ng-model="name">
+				</div>
+				<button type="button" class="col-lg-2 btn btn-success" ng-class="{disabled:!name}" ng-click="device.name = name; name = '';">save</button>
+			</div>
+			<div class="row">
+				<label class="col-lg-4 lead">Type</label>
+				<label class="col-lg-8 lead">Conditioner</label>
+			</div>
+			<div class="row">
+				<label class="col-lg-4 lead">State</label>
+				<button type="button" class="col-lg-2 col-lg-offset-1 btn btn-default" ng-class="{active:true}">ON</button>
+				<button type="button" class="col-lg-2 col-lg-offset-2 btn btn-default" ng-class="{active:false}">OFF</button>
+			</div>
+			<div class="row">
+				<label class="col-lg-4 lead">Value</label>
+				<span class="col-lg-2 lead">{{device.value || 50}}</span>
+				<div class="col-lg-6 range-device">
+					<input type="range" class="form-control" value="50" min="0" max="100" step="1" ng-model="device.value">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<!-- trigger list container -->
+		<div class="container-fluid container-trigger-list">
+			<div class="row">
+				<h4>Trigger list</h4>
+			</div>
+			<div class="row">
+				<!-- trigger container -->
+				<div class="container-fluid container-trigger">
+					<form class="form-inline" role="form">
+					  <div class="form-group">
+					  	<label class="sr-only" for="name">Name</label>
+					    <input type="text" class="form-control" name="name" placeholder="Name" value="Trigger name">
+					  </div>
+					  <div class="form-group">
+					    <label class="sr-only" for="sensor">Sensor</label>
+					    <select name="sensor" class="form-control">
+					    	<option>Room thermometer</option>
+					    	<option>Light</option>
+					    	<option>Bathroom thermometer</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					    <label class="sr-only" for="condition">Condition</label>
+					    <select name="condition" class="form-control">
+					    	<option>&lt;</option>
+					    	<option>&gt;</option>
+					    	<option>&lt;=</option>
+					    	<option>=&gt;</option>
+					    	<option>==</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					  	<label class="sr-only" for="conditionValue">Condition value</label>
+					    <input type="text" class="form-control text-right value-input" name="conditionValue" placeholder="conditionValue" value="79">
+					  </div>
+					  <div class="form-group">
+					  	<label class="sr-only" for="action">Action</label>
+					    <select name="action" class="form-control" ng-model="action">
+					    	<option>ON</option>
+					    	<option>OFF</option>
+					    	<option value="setValue">Set value</option>
+					    </select>
+					  </div>
+					  <div class="form-group" ng-show="action === 'setValue'">
+					  	<label class="sr-only" for="deviceValue">Device value</label>
+					    <input type="text" class="form-control text-right value-input" name="deviceValue" placeholder="deviceValue" value="35">
+					  </div>
+					  <button type="submit" class="btn btn-success">Save</button>
+					  <button type="submit" class="btn btn-warning">Revert</button>
+					  <button type="submit" class="btn btn-danger">Delete</button>
+					</form>
+					</div> <!-- end trigger -->
+			</div>
+			<div class="row">
+				<!-- new trigger container -->
+				<div class="container-fluid container-trigger">
+					<form class="form-inline" role="form">
+					  <div class="form-group">
+					  	<label class="sr-only" for="name">Name</label>
+					    <input type="text" class="form-control" name="name" placeholder="Enter name">
+					  </div>
+					  <div class="form-group">
+					    <label class="sr-only" for="sensor">Sensor</label>
+					    <select name="sensor" class="form-control">
+					    	<option>Room thermometer</option>
+					    	<option>Light</option>
+					    	<option>Bathroom thermometer</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					    <label class="sr-only" for="condition">Condition</label>
+					    <select name="condition" class="form-control">
+					    	<option>&lt;</option>
+					    	<option>&gt;</option>
+					    	<option>&lt;=</option>
+					    	<option>=&gt;</option>
+					    	<option>==</option>
+					    </select>
+					  </div>
+					  <div class="form-group">
+					  	<label class="sr-only" for="conditionValue">Condition value</label>
+					    <input type="text" class="form-control text-right value-input" name="conditionValue" placeholder="Enter condition value">
+					  </div>
+					  <div class="form-group">
+					  	<label class="sr-only" for="action">Action</label>
+					    <select name="action" class="form-control" ng-model="action">
+					    	<option>ON</option>
+					    	<option>OFF</option>
+					    	<option value="setValue">Set value</option>
+					    </select>
+					  </div>
+					  <div class="form-group" ng-show="action === 'setValue'">
+					  	<label class="sr-only" for="deviceValue">Device value</label>
+					    <input type="text" class="form-control text-right value-input" name="deviceValue" placeholder="Enter value">
+					  </div>
+					  <button type="submit" class="btn btn-success">Create</button>
+					  <button type="submit" class="btn btn-warning">Clear</button>
+					</form>
+					</div> <!-- end new trigger -->
+			</div>
+		</div> <!-- end trigger list -->
+	</div>
+</div>
