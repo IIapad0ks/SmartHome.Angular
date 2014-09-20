@@ -1,5 +1,5 @@
 <!-- fast access container -->
-<div class="container-fluid container-fast-access" ng-controller="FastAccessDeviceController as fastAccess">
+<div class="container-fluid container-fast-access" ng-controller="fastAccessController as fastAccess">
 	<div class="row">
 		<div class="col-lg-3" ng-repeat="device in fastAccess.fastAccessModel.fastAccessDevices">
 			<!-- device container -->
@@ -10,7 +10,7 @@
 							<div class="col-lg-12 container-device-image"></div>
 						</div>
 						<div class="row">
-							<span class="center-block text-center">{{device.Value}}</span>
+							<span class="center-block text-center" ng-show="fastAccess.hasValue(device)">{{device.Value}}</span>
 						</div>
 					</div>
 					<div class="col-lg-3 switch-device">
@@ -22,23 +22,23 @@
 						</div>
 					</div>
 					<div class="col-lg-2 delete-device">
-						<button type="button" class="btn btn-default btn-xs" ng-click="fastAccess.deleteDevice(device)"></button>
+						<button type="button" class="btn btn-default btn-xs" ng-click="fastAccess.remove(device)"></button>
 					</div>
 				</div>
-				<div class="row" ng-show="fastAccess.IsValueDevice(device)">
+				<div class="row" ng-show="fastAccess.canChangeValue(device)">
 					<div class="col-lg-10 col-lg-offset-1 input-group range-device">
 						<input type="range" class="form-control" value="{{device.Value}}" min="0" max="100" step="1" ng-model="device.Value">
 					</div>
 				</div>
 			</div> <!-- end device -->
 		</div>
-		<div class="col-lg-3" ng-show="fastAccess.canAdd">
+		<div class="col-lg-3" ng-show="fastAccess.canAdd()">
 			<div class="col-lg-6 col-lg-offset-3 btn-quick-access">
 				<!-- add new device -->
 				<div class="dropdown">
-				  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">+</button>
+				  <button class="btn btn-default btn-block dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">+</button>
 				  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-				    <li role="presentation" ng-repeat="device in fastAccess.fastAccessModel.otherDevices"><a role="menuitem" href="#" ng-click="fastAccess.addDevice(device)">{{device.Name}}</a></li>
+				    <li role="presentation" ng-repeat="device in fastAccess.fastAccessModel.otherDevices"><a role="menuitem" href="#" ng-click="fastAccess.add(device)">{{device.Name}}</a></li>
 				  </ul>
 				</div> <!-- end add new -->
 			</div>

@@ -2,7 +2,7 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
-    .controller('MainController', function (){
+    .controller('mainController', function (){
 	    
     })
 })();

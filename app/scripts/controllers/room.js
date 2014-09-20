@@ -2,7 +2,7 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
-    .controller('RoomController', ['$routeParams', function ($routeParams) {
+    .controller('roomController', ['$routeParams', function ($routeParams) {
 	    
     }]);
 })();
