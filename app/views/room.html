@@ -1,105 +1,69 @@
-<!-- device list container -->
-<div class="container-fluid">
-	<div class="row">
+<div class="container-fluid" ng-controller="roomController as room">
+	<!-- device list container -->
+	<div class="container-fluid">
 		<!-- device row container -->
-		<div class="container-fluid container-device-row">
+		<div class="row container-device-row" ng-repeat="device in room.vm.room.devices">
 			<div class="col-lg-1 container-device-image"></div>
-			<a href="#/device/1">
-				<div class="col-lg-5 lead device-row-name">Name</div>
+			<a href="#/device/{{device.ID}}">
+				<div class="col-lg-5 lead device-row-name">{{device.Name}}</div>
 			</a>
-			<div class="col-lg-1 lead text-right device-row-value">{{value_d1 || 50}}</div>
+			<div class="col-lg-1 device-row-value"><span class="lead text-right" ng-show="room.vm.deviceService.hasValue(device)">{{device.Value}}</span></div>
 			<div class="col-lg-2 range-device">
-				<input type="range" class="form-control" value="{{value_d1 || 50}}" min="0" max="100" step="1" ng-model="value_d1">
+				<input type="range" class="form-control" value="{{device.Value}}" min="0" max="100" step="1" ng-model="device.Value" ng-show="room.vm.deviceService.canChangeValue(device)">
 			</div>
 			<div class="col-lg-2 btn-group device-row-switcher">
-				<button type="button" class="btn btn-default">on</button>
-				<button type="button" class="btn btn-default">off</button>
+				<button type="button" class="btn btn-default" ng-class="{active:device.IsOn}" ng-click="room.vm.deviceService.on(device)">on</button>
+				<button type="button" class="btn btn-default" ng-class="{active:!device.IsOn}" ng-click="room.vm.deviceService.off(device)">off</button>
 			</div>
-			<button type="button" class="col-lg-1 btn btn-danger device-row-delete">delete</button>
+			<button type="button" class="col-lg-1 btn btn-danger device-row-delete" ng-click="room.vm.deleteDevice(device)">delete</button>
 		</div> <!-- end device row -->
-	</div>
-	<div class="row">
-		<!-- device row container -->
-		<div class="container-fluid container-device-row">
-			<div class="col-lg-1 container-device-image"></div>
-			<a href="#/device/2">
-				<div class="col-lg-5 lead device-row-name">Name</div>
-			</a>
-			<div class="col-lg-1 lead text-right device-row-value">{{value_d2 || 50}}</div>
-			<div class="col-lg-2 range-device">
-				<input type="range" class="form-control" value="{{value_d2 || 50}}" min="0" max="100" step="1" ng-model="value_d2">
-			</div>
-			<div class="col-lg-2 btn-group device-row-switcher">
-				<button type="button" class="btn btn-default">on</button>
-				<button type="button" class="btn btn-default">off</button>
-			</div>
-			<button type="button" class="col-lg-1 btn btn-danger device-row-delete">delete</button>
-		</div> <!-- end device row -->
-	</div>
-	<div class="row">		
-		<!-- device row container -->
-		<div class="container-fluid container-device-row">
-			<div class="col-lg-1 container-device-image"></div>
-			<a href="#/device/3">
-				<div class="col-lg-5 lead device-row-name">Name</div>
-			</a>
-			<div class="col-lg-1 lead text-right device-row-value">{{value_d3 || 50}}</div>
-			<div class="col-lg-2 range-device">
-				<input type="range" class="form-control" value="{{value_d3 || 50}}" min="0" max="100" step="1" ng-model="value_d3">
-			</div>
-			<div class="col-lg-2 btn-group device-row-switcher">
-				<button type="button" class="btn btn-default">on</button>
-				<button type="button" class="btn btn-default">off</button>
-			</div>
-			<button type="button" class="col-lg-1 btn btn-danger device-row-delete">delete</button>
-		</div> <!-- end device row -->
-	</div>
-</div> <!-- end device list -->
+	</div> <!-- end device list -->
 
-<!-- add device container -->
-<div class="container-fluid container-add-device">
-	<div class="row">
-		<button type="button" class="col-lg-2 col-lg-offset-5 btn btn-default btn-lg">+</button>
-	</div>
-	<div class="row">
-		<form class="col-lg-8 col-lg-offset-2 form-horizontal" role="form">
-		  <div class="form-group">
-		    <label for="name" class="col-lg-2 control-label">Name</label>
-		    <div class="col-lg-10">
-		      <input type="text" class="form-control" placeholder="Name">
-		    </div>
-		  </div>
-		  <div class="form-group">
-		    <label for="type" class="col-lg-2 control-label">Type</label>
-		    <div class="col-lg-10">
-		      <select class="form-control">
-		      	<option>Conditioner</option>
-		      	<option>Lamp</option>
-		      	<option>PC</option>
-		      	<option>Notebook</option>
-		      	<option>Teapot</option>
-		      </select>
-		    </div>
-		  </div>
-		  <div class="form-group">
-		  	<label for="state" class="col-lg-2 control-label">State</label>
-		  	<div class="col-lg-10">
-			    <label class="radio-inline">
-					  <input type="radio" name="state" value="on"> ON
-					</label>
-					<label class="radio-inline">
-					  <input type="radio" name="state" value="off"> OFF
-					</label>
-				</div>
-		  </div>
-		  <div class="form-group">
-		    <div class="col-lg-offset-2 col-lg-2">
-		      <button type="submit" class="btn btn-success btn-block">Save</button>
-		    </div>
-		    <div class="col-lg-offset-1 col-lg-2">
-		      <button type="submit" class="btn btn-danger btn-block">Cancel</button>
-		    </div>
-		  </div>
-		</form>
-	</div>
-</div> <!-- end add device -->
+	<!-- add device container -->
+	<div class="container-fluid container-add-device">
+		<div class="row" ng-hide="room.addingDevice">
+			<button type="button" class="col-lg-2 col-lg-offset-5 btn btn-default btn-lg" ng-click="room.addingDevice = true">+</button>
+		</div>
+		<div class="row" ng-show="room.addingDevice">
+			<form class="col-lg-8 col-lg-offset-2 form-horizontal" role="form">
+			  <div class="form-group">
+			    <label for="name" class="col-lg-2 control-label">Name</label>
+			    <div class="col-lg-10">
+			      <input type="text" class="form-control" placeholder="Name">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="type" class="col-lg-2 control-label">Type</label>
+			    <div class="col-lg-10">
+			      <select class="form-control">
+			      	<option>Conditioner</option>
+			      	<option>Lamp</option>
+			      	<option>PC</option>
+			      	<option>Notebook</option>
+			      	<option>Teapot</option>
+			      </select>
+			    </div>
+			  </div>
+			  <div class="form-group">
+			  	<label for="state" class="col-lg-2 control-label">State</label>
+			  	<div class="col-lg-10">
+				    <label class="radio-inline">
+						  <input type="radio" name="state" value="on"> ON
+						</label>
+						<label class="radio-inline">
+						  <input type="radio" name="state" value="off"> OFF
+						</label>
+					</div>
+			  </div>
+			  <div class="form-group">
+			    <div class="col-lg-offset-2 col-lg-2">
+			      <button type="submit" class="btn btn-success btn-block">Save</button>
+			    </div>
+			    <div class="col-lg-offset-1 col-lg-2">
+			      <button type="submit" class="btn btn-danger btn-block">Cancel</button>
+			    </div>
+			  </div>
+			</form>
+		</div>
+	</div> <!-- end add device -->
+</div>

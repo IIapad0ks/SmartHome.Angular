@@ -2,23 +2,14 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
+    .constant('MAX_DEVICE_COUNT', 4)
 
-    .factory('fastAccessModel', ['deviceService', function(deviceService){
+    .factory('fastAccessModel', ['deviceService', 'MAX_DEVICE_COUNT', function(deviceService, maxDeviceCount, deviceTypeID){
     	return function(){
-            var devices = deviceService.getAll();
-            var fastAccessDevices = [];
-            var otherDevices = [];
-            angular.forEach(devices, function(device){
-                if(device.FastAccess){
-                    fastAccessDevices.push(device);
-                } else {
-                    otherDevices.push(device);
-                }
-            });
-
-            this.allDevices = devices;
-            this.fastAccessDevices = fastAccessDevices;
-            this.otherDevices = otherDevices;
+            this.deviceService = deviceService;
+            this.allDevices = deviceService.getAll();
+            this.fastAccessDevices = _.filter(this.allDevices, function(device){ return device.FastAccess; });
+            this.otherDevices = _.filter(this.allDevices, function(device){ return !device.FastAccess; });
 
             this.add = function(device){
                 device.FastAccess = true;
@@ -34,10 +25,14 @@
                 device.FastAccess = false;
                 deviceService.update(device);
 
-                this.otherDevices.push(device);
+                this.otherDevices.unshift(device);
                 this.fastAccessDevices = _.reject(this.fastAccessDevices, function(item){
                     return item.ID == device.ID;
-                })
+                });
+            }
+
+            this.canAdd = function(){
+                return this.fastAccessDevices.length < maxDeviceCount;
             }
     	}
     }]);

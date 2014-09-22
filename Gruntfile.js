@@ -405,4 +405,9 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.registerTask('easy', [
+    'connect:livereload',
+    'watch'
+  ]);
 };

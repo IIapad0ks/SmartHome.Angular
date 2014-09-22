@@ -8,15 +8,15 @@
 				ID: 1,
 				Name: 'BedRoom'
 			}];
+			rooms[0].devices = deviceService.getByRoomID(1);
 
 			return {
 				get: function(id){
-					return _.find(rooms, function(room){
+					var room = _.find(rooms, function(room){
 						return room.ID == id;
 					});
-				},
-				getDevices: function(id){
-					return deviceService.getByRoomID(id);
+
+					return room;
 				}
 			}
     }]);
