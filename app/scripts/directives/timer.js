@@ -2,18 +2,23 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
-    .directive('timer', function(){
+    .directive('timer', ['$interval', 'deviceService', function($interval, deviceService){
 	    return {
 	    	restrict: 'E',
 	    	scope: {
-	    		startTime: '='
+	    		device: '='
 	    	},
-	    	template: '{{timer.currentTime(startTime).hours}}:{{timer.currentTime(startTime).minutes}}:{{timer.currentTime(startTime).seconds}}',
-	    	controller: function($interval){
-	    		var offset = 0;
-
-	    		this.currentTime = function(startTime){
-	    			var sec_num = offset + startTime;
+	    	template: '{{currentTime.hours}}:{{currentTime.minutes}}:{{currentTime.seconds}}',
+	    	controller: function($scope){
+	    		$scope.currentTime = {
+	    			hours: '00',
+	    			minutes: '00',
+	    			seconds: '00'
+	    		};
+	    	},
+	    	link: function($scope){
+	    		var updateTimer = function(){
+	    			var sec_num = $scope.device.WorkingTime;
 
 				    var hours   = Math.floor(sec_num / 3600);
 				    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
@@ -23,18 +28,22 @@
 				    if (minutes < 10) {minutes = "0"+minutes;}
 				    if (seconds < 10) {seconds = "0"+seconds;}
 
-				    return {
-				    	hours: hours,
-				    	minutes: minutes,
-				    	seconds: seconds
-				    }
-	    		}
+				    $scope.currentTime = {
+		    			hours: hours,
+		    			minutes: minutes,
+		    			seconds: seconds
+		    		};
+	    			
+	    			//deviceService.updateLocal($scope.device);
+		    	}
 
+		    	updateTimer();
 	    		$interval(function(){
-	    			offset += 1;
+	    			$scope.device.WorkingTime += 1;
+	    			updateTimer();
 	    		}, 1000);
 	    	},
 	    	controllerAs: 'timer'
 	    }
-    });
+    }]);
 })();

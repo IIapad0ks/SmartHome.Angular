@@ -1,34 +1,28 @@
 <!-- device container -->
 <div class="container-fluid container-device-details">
 	<div class="row">
-		<div class="col-lg-2 container-device-image"></div>
+		<div class="col-lg-2 container-device-image" style="background-image: url('/images/{{deviceCtrl.vm.device.Type.Name}}.png');"></div>
 		<div class="col-lg-9 col-lg-offset-1">
 			<div class="row">
 				<label class="col-lg-4 lead">Name</label>
-				<label class="col-lg-6 lead">{{device.name || "My room conditioner"}}</label>
-				<button type="button" class="col-lg-2 btn btn-warning">edit</button>
-			</div>
-			<div class="row">
-				<label class="col-lg-4 lead">Name</label>
-				<div class="col-lg-6">
-					<input type="text" class="form-control" placeholder="Enter new device name" ng-model="name">
+				<div class="col-lg-8">
+					<input type="text" class="form-control" placeholder="Enter new device name" ng-model="deviceCtrl.vm.device.Name" ng-change="deviceCtrl.vm.deviceService.update(deviceCtrl.vm.device)">
 				</div>
-				<button type="button" class="col-lg-2 btn btn-success" ng-class="{disabled:!name}" ng-click="device.name = name; name = '';">save</button>
 			</div>
 			<div class="row">
 				<label class="col-lg-4 lead">Type</label>
-				<label class="col-lg-8 lead">Conditioner</label>
+				<label class="col-lg-8 lead">{{deviceCtrl.vm.device.Type.Name}}</label>
 			</div>
 			<div class="row">
 				<label class="col-lg-4 lead">State</label>
-				<button type="button" class="col-lg-2 col-lg-offset-1 btn btn-default" ng-class="{active:true}">ON</button>
-				<button type="button" class="col-lg-2 col-lg-offset-2 btn btn-default" ng-class="{active:false}">OFF</button>
+				<button type="button" class="col-lg-2 col-lg-offset-1 btn btn-default" ng-class="{active:deviceCtrl.vm.device.IsOn}" ng-click="deviceCtrl.vm.deviceService.on(deviceCtrl.vm.device)">ON</button>
+				<button type="button" class="col-lg-2 col-lg-offset-2 btn btn-default" ng-class="{active:!deviceCtrl.vm.device.IsOn}" ng-click="deviceCtrl.vm.deviceService.off(deviceCtrl.vm.device)">OFF</button>
 			</div>
-			<div class="row">
+			<div class="row" ng-show="deviceCtrl.vm.deviceService.hasValue(deviceCtrl.vm.device)">
 				<label class="col-lg-4 lead">Value</label>
-				<span class="col-lg-2 lead">{{device.value || 50}}</span>
-				<div class="col-lg-6 range-device">
-					<input type="range" class="form-control" value="50" min="0" max="100" step="1" ng-model="device.value">
+				<span class="col-lg-2 lead">{{deviceCtrl.vm.device.Value}}</span>
+				<div class="col-lg-6 range-device" ng-show="deviceCtrl.vm.deviceService.canChangeValue(deviceCtrl.vm.device)">
+					<input type="range" class="form-control" min="0" max="100" step="1" ng-model="deviceCtrl.vm.device.Value" ng-change="deviceCtrl.vm.deviceService.setValue(deviceCtrl.vm.device, deviceCtrl.vm.device.Value)">
 				</div>
 			</div>
 		</div>
@@ -39,98 +33,82 @@
 			<div class="row">
 				<h4>Trigger list</h4>
 			</div>
-			<div class="row">
+			<div class="row" ng-repeat="trigger in deviceCtrl.vm.triggers">
 				<!-- trigger container -->
 				<div class="container-fluid container-trigger">
 					<form class="form-inline" role="form">
 					  <div class="form-group">
 					  	<label class="sr-only" for="name">Name</label>
-					    <input type="text" class="form-control" name="name" placeholder="Name" value="Trigger name">
+					    <input type="text" class="form-control" name="name" placeholder="Enter name" ng-model="trigger.Name">
 					  </div>
-					  <div class="form-group">
+					  <div class="form-group" ng-if="deviceCtrl.vm.deviceService.isDevice(deviceCtrl.vm.device)">
 					    <label class="sr-only" for="sensor">Sensor</label>
-					    <select name="sensor" class="form-control">
-					    	<option>Room thermometer</option>
-					    	<option>Light</option>
-					    	<option>Bathroom thermometer</option>
+					    <select name="sensor" class="form-control" ng-model="trigger.Sensor.ID">
+					    	<option ng-repeat="sensor in deviceCtrl.vm.deviceService.getSensors()" value="{{sensor.ID}}" ng-selected="sensor.ID == trigger.Sensor.ID">{{sensor.Name}}</option>
+					    </select>
+					  </div>
+					  <div class="form-group" ng-if="deviceCtrl.vm.deviceService.isSensor(deviceCtrl.vm.device)">
+					    <label class="sr-only" for="device">Device</label>
+					    <select name="sensor" class="form-control" ng-model="trigger.Device.ID">
+					    	<option ng-repeat="device in deviceCtrl.vm.deviceService.getDevices()" value="{{device.ID}}" ng-selected="device.ID == trigger.Device.ID">{{device.Name}}</option>
 					    </select>
 					  </div>
 					  <div class="form-group">
-					    <label class="sr-only" for="condition">Condition</label>
-					    <select name="condition" class="form-control">
-					    	<option>&lt;</option>
-					    	<option>&gt;</option>
-					    	<option>&lt;=</option>
-					    	<option>=&gt;</option>
-					    	<option>==</option>
-					    </select>
-					  </div>
-					  <div class="form-group">
-					  	<label class="sr-only" for="conditionValue">Condition value</label>
-					    <input type="text" class="form-control text-right value-input" name="conditionValue" placeholder="conditionValue" value="79">
+					  	<label class="sr-only" for="conditionValue">Condition</label>
+					    <input type="text" class="form-control text-right value-input" name="condition" placeholder="condition" ng-model="trigger.Condition">
 					  </div>
 					  <div class="form-group">
 					  	<label class="sr-only" for="action">Action</label>
-					    <select name="action" class="form-control" ng-model="action">
-					    	<option>ON</option>
-					    	<option>OFF</option>
-					    	<option value="setValue">Set value</option>
+					    <select name="action" class="form-control" ng-model="trigger.Action.ID">
+					    	<option ng-repeat="action in deviceCtrl.vm.actionService.getAll()" value="{{action.ID}}" ng-selected="action.ID == trigger.Action.ID">{{action.Name}}</option>
 					    </select>
 					  </div>
-					  <div class="form-group" ng-show="action === 'setValue'">
+					  <div class="form-group" ng-show="deviceCtrl.vm.actionService.canSetValue(trigger.Action)">
 					  	<label class="sr-only" for="deviceValue">Device value</label>
-					    <input type="text" class="form-control text-right value-input" name="deviceValue" placeholder="deviceValue" value="35">
+					    <input type="text" class="form-control text-right value-input" name="deviceValue" placeholder="deviceValue" ng-model="trigger.SetValue">
 					  </div>
-					  <button type="submit" class="btn btn-success">Save</button>
-					  <button type="submit" class="btn btn-warning">Revert</button>
-					  <button type="submit" class="btn btn-danger">Delete</button>
+					  <button type="button" class="btn btn-success" ng-click="deviceCtrl.vm.triggerService.update(trigger)">Save</button>
+					  <button type="button" class="btn btn-warning" ng-click="deviceCtrl.vm.resetTrigger(trigger)">Revert</button>
+					  <button type="button" class="btn btn-danger" ng-click="deviceCtrl.vm.deleteTrigger(trigger)">Delete</button>
 					</form>
-					</div> <!-- end trigger -->
+				</div> <!-- end trigger -->
 			</div>
 			<div class="row">
 				<!-- new trigger container -->
 				<div class="container-fluid container-trigger">
-					<form class="form-inline" role="form">
+					<form name="addTrigger" class="form-inline" role="form" ng-submit="addTrigger.$invalid || deviceCtrl.vm.addTrigger()" novalidate>
 					  <div class="form-group">
 					  	<label class="sr-only" for="name">Name</label>
-					    <input type="text" class="form-control" name="name" placeholder="Enter name">
+					    <input type="text" class="form-control" name="name" placeholder="Enter name" ng-model="deviceCtrl.vm.newTrigger.Name" required>
 					  </div>
-					  <div class="form-group">
+					  <div class="form-group" ng-show="deviceCtrl.vm.deviceService.isDevice(deviceCtrl.vm.device)">
 					    <label class="sr-only" for="sensor">Sensor</label>
-					    <select name="sensor" class="form-control">
-					    	<option>Room thermometer</option>
-					    	<option>Light</option>
-					    	<option>Bathroom thermometer</option>
+					    <select name="sensor" class="form-control" ng-model="deviceCtrl.vm.newTrigger.Sensor.ID">
+					    	<option ng-repeat="sensor in deviceCtrl.vm.deviceService.getSensors()" value="{{sensor.ID}}">{{sensor.Name}}</option>
+					    </select>
+					  </div>
+					  <div class="form-group" ng-show="deviceCtrl.vm.deviceService.isSensor(deviceCtrl.vm.device)">
+					    <label class="sr-only" for="device">Device</label>
+					    <select name="sensor" class="form-control" ng-model="deviceCtrl.vm.newTrigger.Device.ID">
+					    	<option ng-repeat="device in deviceCtrl.vm.deviceService.getDevices()" value="{{device.ID}}">{{device.Name}}</option>
 					    </select>
 					  </div>
 					  <div class="form-group">
-					    <label class="sr-only" for="condition">Condition</label>
-					    <select name="condition" class="form-control">
-					    	<option>&lt;</option>
-					    	<option>&gt;</option>
-					    	<option>&lt;=</option>
-					    	<option>=&gt;</option>
-					    	<option>==</option>
-					    </select>
-					  </div>
-					  <div class="form-group">
-					  	<label class="sr-only" for="conditionValue">Condition value</label>
-					    <input type="text" class="form-control text-right value-input" name="conditionValue" placeholder="Enter condition value">
+					  	<label class="sr-only" for="conditionValue">Condition</label>
+					    <input type="text" class="form-control text-right value-input" name="condition" placeholder="Enter condition" ng-model="deviceCtrl.vm.newTrigger.Condition" required>
 					  </div>
 					  <div class="form-group">
 					  	<label class="sr-only" for="action">Action</label>
-					    <select name="action" class="form-control" ng-model="action">
-					    	<option>ON</option>
-					    	<option>OFF</option>
-					    	<option value="setValue">Set value</option>
+					    <select name="action" class="form-control" ng-model="deviceCtrl.vm.newTrigger.Action.ID" required>
+					    	<option ng-repeat="action in deviceCtrl.vm.actionService.getAll()" value="{{action.ID}}">{{action.Name}}</option>
 					    </select>
 					  </div>
-					  <div class="form-group" ng-show="action === 'setValue'">
+					  <div class="form-group" ng-show="deviceCtrl.vm.actionService.canSetValue(deviceCtrl.vm.newTrigger.Action)">
 					  	<label class="sr-only" for="deviceValue">Device value</label>
-					    <input type="text" class="form-control text-right value-input" name="deviceValue" placeholder="Enter value">
+					    <input type="text" class="form-control text-right value-input" name="deviceValue" placeholder="deviceValue" ng-model="deviceCtrl.vm.newTrigger.SetValue">
 					  </div>
 					  <button type="submit" class="btn btn-success">Create</button>
-					  <button type="submit" class="btn btn-warning">Clear</button>
+					  <button type="button" class="btn btn-warning" ng-click="deviceCtrl.vm.cancelAddTrigger()">Clear</button>
 					</form>
 					</div> <!-- end new trigger -->
 			</div>

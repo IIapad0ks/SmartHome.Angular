@@ -15,9 +15,12 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch'
+    'ngTouch',
+    'restangular'
   ])
-  .config(['$routeProvider', function ($routeProvider) {
+  .config(['$routeProvider', 'RestangularProvider', function ($routeProvider, RestangularProvider) {
+    RestangularProvider.setBaseUrl("http://localhost:53605/api");
+
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -25,11 +28,13 @@ angular
       })
       .when('/room/:id', {
         templateUrl: 'views/room.html',
-        controller: 'roomController'
+        controller: 'roomViewController',
+        controllerAs: 'room'
       })
       .when('/device/:id', {
         templateUrl: 'views/device.html',
-        controller: 'deviceController'
+        controller: 'deviceController',
+        controllerAs: 'deviceCtrl'
       })
       .otherwise({
         redirectTo: '/'

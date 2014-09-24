@@ -1,13 +1,13 @@
 <!-- fast access container -->
 <div class="container-fluid container-fast-access" ng-controller="fastAccessController as fastAccess">
 	<div class="row">
-		<div class="col-lg-3" ng-repeat="device in fastAccess.vm.fastAccessDevices">
+		<div class="col-lg-3" ng-repeat="device in fastAccess.vm.fastAccessDevices()">
 			<!-- device container -->
 			<div class="container-fluid container-device">
 				<div class="row">
 					<div class="col-lg-7 container-device-info">
 						<div class="row">
-							<div class="col-lg-12 container-device-image"></div>
+							<div class="col-lg-12 container-device-image" style="background-image: url('/images/{{device.Type.Name}}.png');"></div>
 						</div>
 						<div class="row">
 							<span class="center-block text-center" ng-show="fastAccess.vm.deviceService.hasValue(device)">{{device.Value}}</span>
@@ -38,7 +38,7 @@
 				<div class="dropdown">
 				  <button class="btn btn-default btn-block dropdown-toggle" type="button" id="fastAccessAddDropdown" data-toggle="dropdown">+</button>
 				  <ul class="dropdown-menu" role="menu" aria-labelledby="fastAccessAddDropdown">
-				    <li role="presentation" ng-repeat="device in fastAccess.vm.otherDevices"><a role="menuitem" href="#" ng-click="fastAccess.vm.add(device)">{{device.Name}}</a></li>
+				    <li role="presentation" ng-repeat="device in fastAccess.vm.otherDevices()"><a role="menuitem" href="#" ng-click="fastAccess.vm.add(device)">{{device.Name}}</a></li>
 				  </ul>
 				</div> <!-- end add new -->
 			</div>
@@ -58,25 +58,25 @@
 						<div class="row">
 							<div class="col-lg-6 container-device-info">
 								<div class="row">
-									<div class="col-lg-12 container-device-image"></div>
+									<div class="col-lg-12 container-device-image temperature"></div>
 								</div>
 								<div class="row">
-									<span class="col-lg-6 center-block text-center">{{(room.vm.temperatureSensorsValue | number:0) || '-'}}</span>
-									<span class="col-lg-6 center-block text-center">{{(room.vm.temperatureDevicesValue | number:0) || '-'}}</span>
+									<span class="col-lg-6 center-block text-center">{{(room.vm.getTemperatureSensorsValue() | number:0) || '-'}}</span>
+									<span class="col-lg-6 center-block text-center">{{(room.vm.getTemperatureDevicesValue() | number:0) || '-'}}</span>
 								</div>
 							</div>
 							<div class="col-lg-4 switch-device">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" ng-checked="{{room.vm.temperatureDevicesIsOn}}" ng-model="room.vm.temperatureDevicesIsOn" ng-change="room.vm.temperatureDevicesToggle()">
+										<input type="checkbox" ng-checked="{{room.vm.temperatureDevicesIsOn()}}" ng-model="room.vm.temperatureIsOn" ng-change="room.vm.temperatureDevicesToggle()">
 										On
 									</label>
 								</div>
 							</div>
 						</div>
-						<div class="row" ng-show="room.vm.hasTemperatureDevices">
+						<div class="row" ng-show="room.vm.hasTemperatureDevices()">
 							<div class="col-lg-10 col-lg-offset-1 input-group range-device">
-								<input type="range" class="form-control" value="{{room.vm.temperatureDevicesValue}}" min="0" max="100" step="1" ng-change="room.vm.setTemperatureDevicesValue()" ng-model="room.vm.temperatureDevicesValue">
+								<input type="range" class="form-control" min="0" max="100" step="1" ng-change="room.vm.setTemperatureDevicesValue()" ng-model="room.vm.temperatureRangeValue">
 							</div>
 						</div>
 					</div> <!-- end room temperature controller -->
@@ -87,25 +87,25 @@
 						<div class="row">
 							<div class="col-lg-6 container-device-info">
 								<div class="row">
-									<div class="col-lg-12 container-device-image"></div>
+									<div class="col-lg-12 container-device-image brightness"></div>
 								</div>
 								<div class="row">
-									<span class="col-lg-6 center-block text-center">{{(room.vm.brightnessSensorsValue | number:0) || '-'}}</span>
-									<span class="col-lg-6 center-block text-center">{{(room.vm.brightnessDevicesValue | number:0) || '-'}}</span>
+									<span class="col-lg-6 center-block text-center">{{(room.vm.getBrightnessSensorsValue() | number:0) || '-'}}</span>
+									<span class="col-lg-6 center-block text-center">{{(room.vm.getBrightnessDevicesValue() | number:0) || '-'}}</span>
 								</div>
 							</div>
 							<div class="col-lg-4 switch-device">
 								<div class="checkbox">
 									<label>
-										<input type="checkbox" ng-checked="{{room.vm.brightnessDevicesIsOn}}" ng-model="room.vm.brightnessDevicesIsOn" ng-change="room.vm.brightnessDevicesToggle()">
+										<input type="checkbox" ng-checked="{{room.vm.brightnessDevicesIsOn()}}" ng-model="room.vm.brightnessIsOn" ng-change="room.vm.brightnessDevicesToggle()">
 										On
 									</label>
 								</div>
 							</div>
 						</div>
-						<div class="row" ng-show="room.vm.hasBrightnessDevices">
+						<div class="row" ng-show="room.vm.hasBrightnessDevices()">
 							<div class="col-lg-10 col-lg-offset-1 input-group range-device">
-								<input type="range" class="form-control" value="{{room.vm.brightnessDevicesValue}}" min="0" max="100" step="1" ng-model="room.vm.brightnessDevicesValue" ng-change="room.vm.setBrightnessDevicesValue()">
+								<input type="range" class="form-control" min="0" max="100" step="1" ng-model="room.vm.brightnessRangeValue" ng-change="room.vm.setBrightnessDevicesValue()">
 							</div>
 						</div>
 					</div> <!-- end room temperature controller -->
@@ -115,8 +115,8 @@
 			<div class="row">
 				<!-- device process container -->
 				<div class="row container-device-process" ng-repeat="device in room.vm.room.devices" ng-if="device.NeedTimeControl && device.IsOn">
-					<div class="col-lg-1 col-lg-offset-1 container-device-image"></div>
-					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer"><timer start-time="device.WorkingTime"></timer></div>
+					<div class="col-lg-1 col-lg-offset-1 container-device-image" style="background-image: url('/images/{{device.Type.Name}}.png');"></div>
+					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer"><timer device="device"></timer></div>
 					<button type="button" class="col-lg-2 btn btn-danger device-process-btn" ng-click="room.vm.deviceService.off(device)">off</button>
 				</div> <!-- end device process -->
 			</div>

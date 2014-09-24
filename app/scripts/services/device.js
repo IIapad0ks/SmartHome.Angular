@@ -2,178 +2,122 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
+		.constant('DEVICE_TYPE_ID', 1)
 
-    .service('deviceService', ['DEVICE_TYPE_ID', function(deviceTypeID){
-			var devices = [{
-				ID: 1,
-				Name: 'roomConditioner',
-				Value: 23,
-				IsOn: true,
-				FastAccess: true,
-				RoomID: 1,
-				NeedTimeControl: false,
-				WorkingTime: null,
-				Type: {
-					ID: 1,
-					Name: 'Conditioner',
-					Type: {
-						ID: 1,
-						Name: 'Device'
+		.constant('SENSOR_TYPE_ID', 2)
+
+    .service('deviceService', ['DEVICE_TYPE_ID', 'SENSOR_TYPE_ID', 'Restangular', function(deviceTypeId, sensorTypeId, Restangular){
+			var dbDevices = Restangular.all('device');
+
+			var devices = [];
+			var isLoaded = {
+				All: false,
+				Rooms: [],
+				Sensors: false,
+				Devices: false
+			};
+			
+			var updateDevice = function(item){
+				var isUpdated = false;
+				_.each(devices, function(device){
+					if(device.Id == item.Id){
+						device = item;
+						isUpdated = true;
 					}
+				});
+
+				if(!isUpdated){
+					devices.push(item);
 				}
-			},
-			{
-				ID: 2,
-				Name: 'roomLight',
-				Value: 35,
-				IsOn: true,
-				FastAccess: true,
-				RoomID: 1,
-				NeedTimeControl: false,
-				WorkingTime: 7200,
-				Type: {
-					ID: 2,
-					Name: 'Light',
-					Type: {
-						ID: 1,
-						Name: 'Device'
-					}
-				}
-			},
-			{
-				ID: 3,
-				Name: 'roomTableLamp',
-				Value: null,
-				IsOn: false,
-				FastAccess: false,
-				RoomID: 1,
-				NeedTimeControl: false,
-				WorkingTime: null,
-				Type: {
-					ID: 3,
-					Name: 'SimpleLamp',
-					Type: {
-						ID: 1,
-						Name: 'Device'
-					}
-				}
-			},
-			{
-				ID: 4,
-				Name: 'bedLamp',
-				Value: null,
-				IsOn: false,
-				FastAccess: false,
-				RoomID: 1,
-				NeedTimeControl: false,
-				WorkingTime: null,
-				Type: {
-					ID: 3,
-					Name: 'SimpleLamp',
-					Type: {
-						ID: 1,
-						Name: 'Device'
-					}
-				}
-			},
-			{
-				ID: 5,
-				Name: 'roomThermometer',
-				Value: 18,
-				IsOn: true,
-				FastAccess: false,
-				RoomID: 1,
-				NeedTimeControl: false,
-				WorkingTime: 26218,
-				Type: {
-					ID: 4,
-					Name: 'TemperatureSensor',
-					Type: {
-						ID: 2,
-						Name: 'Sensor'
-					}
-				}
-			},
-			{
-				ID: 6,
-				Name: 'roomBrightness',
-				Value: 75,
-				IsOn: true,
-				FastAccess: false,
-				RoomID: 1,
-				NeedTimeControl: false,
-				WorkingTime: 37561,
-				Type: {
-					ID: 5,
-					Name: 'LightSensor',
-					Type: {
-						ID: 2,
-						Name: 'Sensor'
-					}
-				}
-			},
-			{
-				ID: 7,
-				Name: 'window',
-				Value: 10,
-				IsOn: true,
-				FastAccess: false,
-				RoomID: 1,
-				NeedTimeControl: true,
-				WorkingTime: 600,
-				Type: {
-					ID: 6,
-					Name: 'Window',
-					Type: {
-						ID: 1,
-						Name: 'Device'
-					}
-				}
-			}];
+			}
+
+			var updateDevices = function(items){
+				_.each(items, function(item){
+					updateDevice(item);
+				});
+			}
 
 			return {
 				get: function(id){
-					return _.find(devices, function(device){
-						return device.ID == id;
-					});
+					item = dbDevices.get(id).$object;
+					updateDevice(item);
+					return item;
 				},
 				getAll: function(){
+					updateDevices(dbDevices.getList().$object);
 					return devices;
 				},
 				getByRoomID: function(roomID){
-					return _.filter(devices, function(device){
-						return device.RoomID == roomID;
-					});
+					var items = dbDevices.all('room').all(roomID).getList().$object;
+					updateDevices(items);
+					return items;
+				},
+				getSensors: function(){
+					var items = dbDevices.all('sensor').getList().$object;
+					updateDevices(items);
+					return items;
+				},
+				getDevices: function(){
+					ivar items = dbDevices.all('device').getList().$object;
+					updateDevices(items);
+					return items;
 				},
 				add: function(device){
-					devices.push(device);
+					//add to db - getting new device - checking
+					device = dbDevices.post(device).$object;
+					console.log(device);
+
+					updateDevice(device);
+					return device;
 				},
 				update: function(device){
-					var index = _.indexOf(devices, device);
-					devices[index] = device;
-
-					return true;
+					dbDevices
+					updateDevice(device);
+					return isUpdated;
+				},
+				updateLocal: function(device){
+					updateDevice(device);
 				},
 				delete: function(device){
-					var index = _.indexOf(devices, device);
-					devices.splice(index, 1);
+					//delete from db = getting true or false
+					var dbIndex = _.indexOf(dbDevices, device);
+					if(dbIndex != -1){
+						dbDevices.splice(dbIndex, 1);
+					}
 
-					return true;
+					var isDeleted = true;
+
+					if(isDeleted){
+						var index = _.indexOf(devices, device);
+						if(index != -1){
+							devices.splice(index, 1);
+						}
+					}
+
+					return isDeleted;
+				},
+				isSensor: function(device){
+					return device.Type.Type.ID == sensorTypeId;
+				},
+				isDevice: function(device){
+					return device.Type.Type.ID == deviceTypeId;
 				},
 				hasValue: function(device){
 					return device.Value !== null;
 				},
 				canChangeValue: function(device){
-          return this.hasValue(device) && device.Type.Type.ID == deviceTypeID;
+          return this.hasValue(device) && device.Type.Type.ID == deviceTypeId;
         },
         on: function(device){
+        	//send command "on"
         	device.IsOn = true;
-        	this.update(device);
+        	updateDevice(device);
         },
         off: function(device){
+        	//send command "off"
         	device.IsOn = false;
         	device.WorkingTime = 0;
-        	this.update(device);
+        	updateDevice(device);
         },
         toggle: function(device){
         	if(device.IsOn){
@@ -182,8 +126,10 @@
         		this.off(device);
         	}
         },
-        setValue: function(device){
-        	this.update(device);
+        setValue: function(device, value){
+        	//send command change value
+        	device.Value = value;
+        	updateDevice(device);
         }
 			}
     }]);
