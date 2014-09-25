@@ -11,80 +11,95 @@
 
 		.constant('BRIGHTNESS_DEVICE_TYPE_IDS', [2])
 
-    .factory('roomModel', ['roomService', 'deviceService', 'TEMPERATURE_SENSOR_TYPE_ID', 'BRIGHTNESS_SENSOR_TYPE_ID', 'TEMPERATURE_DEVICE_TYPE_IDS', 'BRIGHTNESS_DEVICE_TYPE_IDS', 'DEVICE_TYPE_ID', 'SENSOR_TYPE_ID',  function(roomService, deviceService, temperatureSensorTypeID, brightnessSensorTypeID, temperatureDeviceTypeIDs, brightnessDeviceTypeIDs, deviceTypeID, sensorTypeID){
+    .factory('roomModel', ['roomService', 'deviceService', 'TEMPERATURE_SENSOR_TYPE_ID', 'BRIGHTNESS_SENSOR_TYPE_ID', 'TEMPERATURE_DEVICE_TYPE_IDS', 'BRIGHTNESS_DEVICE_TYPE_IDS', 'DEVICE_TYPE_ID', 'SENSOR_TYPE_ID',  function(roomService, deviceService, temperatureSensorTypeId, brightnessSensorTypeId, temperatureDeviceTypeIds, brightnessDeviceTypeIds, deviceTypeId, sensorTypeId){
 			return function(id){
-				this.deviceService = deviceService;
+				var self = this;
 
-				this.room = roomService.get(id);
-				this.room.devices = deviceService.getByRoomID(this.room.ID);
+				self.deviceService = deviceService;
 
-				//GETTING DEVICES
-				var temperatureSensors = _.filter(this.room.devices, function(device){
-					return device.Type.Type.ID == sensorTypeID && device.Type.ID == temperatureSensorTypeID && device.IsOn;
+				self.room = {};
+				self.room.devices = [];
+
+				var temperatureSensors = [];
+				var brightnessSensors = [];
+				var temperatureDevices = [];
+				var brightnessDevices = [];
+
+				roomService.get(id).then(function(room){
+					self.room = room;
+					self.room.devices = [];
+
+					deviceService.getByRoomId(room.Id).then(function(devices){
+						self.room.devices = devices;
+
+						temperatureSensors = _.filter(devices, function(device){
+							return device.Type.Class.Id == sensorTypeId && device.Type.Id == temperatureSensorTypeId && device.IsOn;
+						});
+						brightnessSensors = _.filter(devices, function(device){
+							return device.Type.Class.Id == sensorTypeId && device.Type.Id == brightnessSensorTypeId;
+						});
+						temperatureDevices = _.filter(devices, function(device){
+							return device.Type.Class.Id == deviceTypeId && _.contains(temperatureDeviceTypeIds, device.Type.Id);
+						});
+						brightnessDevices = _.filter(devices, function(device){
+							return device.Type.Class.Id == deviceTypeId && _.contains(brightnessDeviceTypeIds, device.Type.Id);
+						});
+					});
 				});
-				var brightnessSensors = _.filter(this.room.devices, function(device){
-					return device.Type.Type.ID == sensorTypeID && device.Type.ID == brightnessSensorTypeID;
-				});
-				var temperatureDevices = _.filter(this.room.devices, function(device){
-					return device.Type.Type.ID == deviceTypeID && _.contains(temperatureDeviceTypeIDs, device.Type.ID);
-				});
-				var brightnessDevices = _.filter(this.room.devices, function(device){
-					return device.Type.Type.ID == deviceTypeID && _.contains(brightnessDeviceTypeIDs, device.Type.ID);
-				});
-				
+
 				//TEMPERATURE BLOCK
-				this.temperatureRangeValue = null;
-				this.temperatureIsOn = null;
+				self.temperatureRangeValue = null;
+				self.temperatureIsOn = null;
 
-				this.getTemperatureSensorsValue = function(){ 
+				self.getTemperatureSensorsValue = function(){ 
 					return _.reduce(temperatureSensors, function(memo, sensor){
 						return memo + parseInt(sensor.Value);
 					}, 0) / temperatureSensors.length;
 				}
 
-				this.hasTemperatureDevices = function(){ return temperatureDevices.length > 0; }
-				this.getTemperatureDevicesValue = function(){ 
-					this.temperatureRangeValue = _.reduce(temperatureDevices, function(memo, device){
+				self.hasTemperatureDevices = function(){ return temperatureDevices.length > 0; }
+				self.getTemperatureDevicesValue = function(){ 
+					self.temperatureRangeValue = _.reduce(temperatureDevices, function(memo, device){
 						return memo + parseInt(device.Value);
 					}, 0) / temperatureDevices.length;
 
-					return this.temperatureRangeValue;
+					return self.temperatureRangeValue;
 				}
-				this.temperatureDevicesIsOn = function(){ 
-					this.temperatureIsOn = _.filter(temperatureDevices, function(device){ return device.IsOn; }).length > 0; 
+				self.temperatureDevicesIsOn = function(){ 
+					self.temperatureIsOn = _.filter(temperatureDevices, function(device){ return device.IsOn; }).length > 0; 
 
-					return this.temperatureIsOn;
+					return self.temperatureIsOn;
 				}
 
-				this.temperatureRangeValue = this.getTemperatureDevicesValue();
-				this.temperatureIsOn = this.temperatureDevicesIsOn();
+				self.temperatureRangeValue = self.getTemperatureDevicesValue();
+				self.temperatureIsOn = self.temperatureDevicesIsOn();
 
 				//BRIGHTNESS BLOCK
-				this.brightnessRangeValue = null;
-				this.brightnessIsOn = null;
+				self.brightnessRangeValue = null;
+				self.brightnessIsOn = null;
 
-				this.getBrightnessSensorsValue = function(){
+				self.getBrightnessSensorsValue = function(){
 					return _.reduce(brightnessSensors, function(memo, sensor){
 						return memo + parseInt(sensor.Value);
 					}, 0) / brightnessSensors.length;
 				}
 
-				this.hasBrightnessDevices = function(){ return brightnessDevices.length > 0; }
-				this.getBrightnessDevicesValue = function(){ 
-					this.brightnessRangeValue = _.reduce(brightnessDevices, function(memo, device){
+				self.hasBrightnessDevices = function(){ return brightnessDevices.length > 0; }
+				self.getBrightnessDevicesValue = function(){ 
+					self.brightnessRangeValue = _.reduce(brightnessDevices, function(memo, device){
 						return memo + parseInt(device.Value);
 					}, 0) / brightnessDevices.length;
 
-					return this.brightnessRangeValue;
+					return self.brightnessRangeValue;
 				}
-				this.brightnessDevicesIsOn = function(){
-					this.brightnessIsOn = _.filter(brightnessDevices, function(device){ return device.IsOn; }).length > 0;
+				self.brightnessDevicesIsOn = function(){
+					self.brightnessIsOn = _.filter(brightnessDevices, function(device){ return device.IsOn; }).length > 0;
 
-					return this.brightnessIsOn;
+					return self.brightnessIsOn;
 				}
 
-				this.brightnessRangeValue = this.getBrightnessDevicesValue();
-				this.brightnessIsOn = this.brightnessDevicesIsOn();
+				self.brightnessRangeValue = self.getBrightnessDevicesValue();
+				self.brightnessIsOn = self.brightnessDevicesIsOn();
 
 				//METHODS
 				var toggleDevices = function(devices, isOn){
@@ -104,20 +119,20 @@
 					});
 				}
 
-				this.temperatureDevicesToggle = function(){
-					toggleDevices(temperatureDevices, this.temperatureIsOn);
+				self.temperatureDevicesToggle = function(){
+					toggleDevices(temperatureDevices, self.temperatureIsOn);
 				}
 
-				this.brightnessDevicesToggle = function(){
-					toggleDevices(brightnessDevices, this.brightnessIsOn);
+				self.brightnessDevicesToggle = function(){
+					toggleDevices(brightnessDevices, self.brightnessIsOn);
 				}
 
-				this.setTemperatureDevicesValue = function(){
-					setDevicesValue(temperatureDevices, this.temperatureRangeValue);
+				self.setTemperatureDevicesValue = function(){
+					setDevicesValue(temperatureDevices, self.temperatureRangeValue);
 				}
 
-				this.setBrightnessDevicesValue = function(){
-					setDevicesValue(brightnessDevices, this.brightnessRangeValue);
+				self.setBrightnessDevicesValue = function(){
+					setDevicesValue(brightnessDevices, self.brightnessRangeValue);
 				}
 			}
     }]);

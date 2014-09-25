@@ -406,8 +406,14 @@ module.exports = function (grunt) {
     'build'
   ]);
 
-  grunt.registerTask('easy', [
-    'connect:livereload',
-    'watch'
-  ]);
+  grunt.registerTask('easy', 'Blah blah blah', function (target) {
+    if (target === 'dist') {
+      return grunt.task.run(['build', 'connect:dist:keepalive']);
+    }
+
+    grunt.task.run([
+      'connect:livereload',
+      'watch'
+    ]);
+  });
 };

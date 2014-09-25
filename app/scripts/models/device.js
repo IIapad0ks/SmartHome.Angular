@@ -4,50 +4,133 @@
 	var app = angular.module('smartHomeApp')
     .factory('deviceModel', ['deviceService', 'triggerService', 'actionService', function(deviceService, triggerService, actionService){
 			return function(id){
-				this.deviceService = deviceService;
-				this.triggerService = triggerService;
-				this.actionService = actionService;
+				var self = this;
 
-				this.device = deviceService.get(id);
-				this.triggers = triggerService.getByDeviceID(this.device.ID);
+				self.deviceService = deviceService;
+				self.triggerService = triggerService;
+				self.actionService = actionService;
 
-				this.resetTrigger = function(trigger){
-					var index = _.indexOf(this.triggers, trigger);
-					if(index != -1){
-						this.triggers[index] = triggerService.get(trigger.ID);
+				self.device = {
+					Type: {
+						Name: 'Device',
+						HasValue: false,
+						Class: {}
 					}
+				};
+				self.device.triggers = [];
+
+				self.actions = [];
+				self.triggerDevices = [];
+
+				deviceService.get(id).then(function(device){
+					self.device = device;
+
+					triggerService.getByDeviceId(device.Id).then(function(triggers){
+						self.device.triggers = triggers;
+					});
+
+					actionService.getAll().then(function(actions){
+						self.actions = actions;
+					});
+
+					if(deviceService.isDevice(device)){
+						deviceService.getSensors().then(function(devices){
+							self.triggerDevices = devices;
+						});
+					}
+
+					if(deviceService.isSensor(device)){
+						deviceService.getDevices().then(function(devices){
+							self.triggerDevices = devices;
+						});
+					}
+				});
+
+				self.isDevice = function(){
+					return deviceService.isDevice(self.device);
 				}
 
-				this.deleteTrigger = function(trigger){
-					triggerService.delete(trigger);
+				self.onDevice = function(){
+					self.device.IsOn = true;
+					deviceService.on(self.device);
+				}
+
+				self.offDevice = function(){
+					self.device.IsOn = false;
+					deviceService.off(self.device);
+				}
+
+				self.canTriggerSetValue = function(actionId){
+					if(self.actions.length == 0 || typeof(actionId) == 'undefined'){
+						return false;
+					}
+
+					return _.find(self.actions, function(action){
+						return action.Id == actionId;
+					}).CanSetValue;
+				}
+
+				self.resetTrigger = function(resetedTrigger){
+					triggerService.get(resetedTrigger.Id).then(function(dbTrigger){
+						self.device.triggers = _.reject(self.device.triggers, function(trigger){
+							return trigger.Id == resetedTrigger.Id;
+						});
+
+						self.device.triggers.push(dbTrigger);
+					});
+				}
+
+				self.deleteTrigger = function(deletedTrigger){
+					triggerService.remove(deletedTrigger).then(function(isDeleted){
+						self.device.triggers = _.reject(self.device.triggers, function(trigger){
+							return trigger.Id == deletedTrigger.Id;
+						});
+					});
 				}
 
 				//ADD TRIGGER
 				var getDefaultTrigger = function(){
 					return {
-						Name: null,
-						Device: {
-							ID: deviceService.isDevice(deviceService.get(id)) ? id : null
-						},
-						Sensor: {
-							ID: deviceService.isSensor(deviceService.get(id)) ? id : null
-						},
-						Condition: null,
-						Action: {
-							ID: null
-						}
+						Id: 0,
+						Name: '',
+						Device: {},
+						Sensor: {},
+						Condition: '',
+						Action: {},
+						SetValue: 0
 					}
 				}
 
-				this.newTrigger = getDefaultTrigger();
+				self.newTrigger = getDefaultTrigger();
 
-				this.addTrigger = function(){
-					triggerService.add(this.newTrigger);
-					this.newTrigger = getDefaultTrigger();
+				self.cancelAddTrigger = function(){
+					self.newTrigger = getDefaultTrigger();
 				}
 
-				this.cancelAddTrigger = function(){
-					this.newTrigger = getDefaultTrigger();
+				self.addTrigger = function(){
+					if(self.isDevice()){
+						self.newTrigger.Device = self.device;
+						self.newTrigger.Sensor = _.find(self.triggerDevices, function(sensor){
+							return self.newTrigger.Sensor.Id == sensor.Id;
+						});
+					}
+
+					if(!self.isDevice()){
+						self.newTrigger.Sensor = self.device;
+						self.newTrigger.Device = _.find(self.triggerDevices, function(device){
+							return self.newTrigger.Device.Id == device.Id;
+						})
+					}
+
+					self.newTrigger.Action = _.find(self.actions, function(action){
+						return self.newTrigger.Action.Id == action.Id;
+					});
+
+					triggerService.add(self.newTrigger).then(function(trigger){
+						self.device.triggers.push(trigger);
+					});
+
+					self.cancelAddTrigger();
 				}
 			}
     }]);

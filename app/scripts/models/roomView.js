@@ -4,36 +4,70 @@
 	var app = angular.module('smartHomeApp')
     .factory('roomViewModel', ['roomService', 'deviceService', 'deviceTypeService', function(roomService, deviceService, deviceTypeService){
 			return function(id){
-				this.deviceService = deviceService;
+				var self = this;
 
-				this.room = roomService.get(id);
-				this.devices = deviceService.getByRoomID(this.room.ID);
+				self.deviceService = deviceService;
 
-				this.deleteDevice = function(device){
-					deviceService.delete(device);
-					this.devices = deviceService.getByRoomID(this.room.ID);
+				self.room = [];
+				self.devices = [];
+
+				roomService.get(id).then(function(room){
+					self.room = room;
+					deviceService.getByRoomId(room.Id).then(function(devices){
+						self.room.devices = devices;
+					});
+				});
+
+				self.deleteDevice = function(deletedDevice){
+					deviceService.remove(deletedDevice).then(function(isDeleted){
+						if(isDeleted){
+							self.room.devices = _.reject(self.room.devices, function(device){
+								return device.Id == deletedDevice.Id;
+							});
+						}
+					});
 				}
 
 				//ADD DEVICE
-				this.newDevice = {};
-				this.isAddDevice = false;
-				this.deviceTypes = deviceTypeService.getAll();
-
-				this.cancelAddDevice = function(){
-					this.newDevice = {};
-					this.isAddDevice = false;
+				var setDefaultDevice = function(){
+					return {
+						Id: 0,
+						Name: '',
+						Value: 0,
+						IsOn: false,
+						FastAccess: false,
+						Room: self.room,
+						WorkingTime: 0,
+						Type: {}
+					}
 				}
 
-				this.startAddDevice = function(){
-					this.isAddDevice = true;
+				self.newDevice = {};
+				self.isAddDevice = false;
+				self.deviceTypes = [];
+
+				self.cancelAddDevice = function(){
+					self.isAddDevice = false;
 				}
 
-				this.addDevice = function(){
-					this.newDevice.RoomID = this.room.ID;
-					deviceService.add(this.newDevice);
-					this.cancelAddDevice();
+				self.startAddDevice = function(){
+					self.newDevice = setDefaultDevice();
+					deviceTypeService.getAll().then(function(deviceTypes){
+						self.deviceTypes = deviceTypes;
+					});
+					self.isAddDevice = true;
+				}
 
-					this.devices = deviceService.getByRoomID(this.room.ID);
+				self.addDevice = function(){
+					self.newDevice.Type = _.find(self.deviceTypes, function(deviceType){
+						return self.newDevice.Type.Id == deviceType.Id;
+					});
+
+					deviceService.add(self.newDevice).then(function(device){
+						self.room.devices.push(device);
+					});
+
+					self.cancelAddDevice();
 				}
 			}
     }]);

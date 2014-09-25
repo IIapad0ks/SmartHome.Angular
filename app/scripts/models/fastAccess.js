@@ -6,28 +6,40 @@
 
     .factory('fastAccessModel', ['deviceService', 'MAX_DEVICE_COUNT', function(deviceService, maxDeviceCount, deviceTypeID){
     	return function(){
-            this.deviceService = deviceService;
+            var self = this;
 
-            this.fastAccessDevices = function(){
-                return _.filter(deviceService.getAll(), function(device){ return device.FastAccess; });
-            }
+            self.deviceService = deviceService;
 
-            this.otherDevices = function(){
-                return _.filter(deviceService.getAll(), function(device){ return !device.FastAccess; });
-            }
+            self.fastAccessDevices = [];
+            self.otherDevices = [];
 
-            this.add = function(device){
+            self.deviceService.getAll().then(function(devices){
+                self.fastAccessDevices = _.filter(devices, function(device){ return device.FastAccess; });
+                self.otherDevices = _.filter(devices, function(device){ return !device.FastAccess; });
+            });
+
+            self.add = function(device){
                 device.FastAccess = true;
-                deviceService.update(device);
+                deviceService.update(device).then(function(data){
+                    self.fastAccessDevices.push(device);
+                    self.otherDevices = _.reject(self.otherDevices, function(otherDevice){
+                        return otherDevice.Id == device.Id;
+                    });
+                });
             }
 
-            this.remove = function(device){
+            self.remove = function(device){
                 device.FastAccess = false;
-                deviceService.update(device);
+                deviceService.update(device).then(function(data){
+                    self.otherDevices.push(device);
+                    self.fastAccessDevices = _.reject(self.fastAccessDevices, function(fastAccessDevice){
+                        return fastAccessDevice.Id == device.Id;
+                    });
+                });
             }
 
-            this.canAdd = function(){
-                return this.fastAccessDevices().length < maxDeviceCount;
+            self.canAdd = function(){
+                return self.fastAccessDevices.length < maxDeviceCount;
             }
     	}
     }]);
