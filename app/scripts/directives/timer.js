@@ -2,7 +2,39 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
-    .directive('timer', ['$interval', 'deviceService', function($interval, deviceService){
+		.service('timerService', ['$interval', function($interval){
+			var deviceTimers = [];
+
+			return {
+				addDeviceTimer: function(timerInfo){
+					this.stopDeviceTimer(timerInfo.device);
+
+					var timer = $interval(timerInfo.fn, timerInfo.interval);
+
+					deviceTimers.push({
+						device: timerInfo.device,
+						timer: timer
+					});
+				},
+				stopDeviceTimer: function(device){
+	    		var deviceTimer = _.find(deviceTimers, function(deviceTimer){
+	    			return deviceTimer.device.Id == device.Id;
+	    		});
+
+	    		if(!angular.isDefined(deviceTimer)){
+	    			return;
+	    		}
+
+	    		$interval.cancel(deviceTimer.timer);
+
+	    		deviceTimers = _.reject(deviceTimers, function(deviceTimer){
+	    			return deviceTimer.device.Id == device.Id;
+	    		});
+	    	}
+			}
+		}])
+
+    .directive('timer', ['$interval', 'deviceService', 'timerService', function($interval, deviceService, timerService){
 	    return {
 	    	restrict: 'E',
 	    	scope: {
@@ -38,10 +70,15 @@
 		    	}
 
 		    	updateTimer();
-	    		$interval(function(){
-	    			$scope.device.WorkingTime += 1;
-	    			updateTimer();
-	    		}, 1000);
+
+	    		timerService.addDeviceTimer({
+	    			device: $scope.device,
+	    			interval: 1000,
+	    			fn: function(){
+		    			$scope.device.WorkingTime += 1;
+		    			updateTimer();
+		    		}
+	    		});
 	    	},
 	    	controllerAs: 'timer'
 	    }

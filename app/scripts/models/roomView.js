@@ -2,24 +2,25 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
-    .factory('roomViewModel', ['roomService', 'deviceService', 'deviceTypeService', function(roomService, deviceService, deviceTypeService){
+    .factory('roomViewModel', ['roomService', 'deviceService', 'deviceRepository', 'deviceTypeService', function(roomService, deviceService, deviceRepository, deviceTypeService){
 			return function(id){
 				var self = this;
 
 				self.deviceService = deviceService;
+				self.deviceRepository = deviceRepository;
 
 				self.room = [];
 				self.devices = [];
 
 				roomService.get(id).then(function(room){
 					self.room = room;
-					deviceService.getByRoomId(room.Id).then(function(devices){
+					deviceRepository.getByRoomId(room.Id).then(function(devices){
 						self.room.devices = devices;
 					});
 				});
 
 				self.deleteDevice = function(deletedDevice){
-					deviceService.remove(deletedDevice).then(function(isDeleted){
+					deviceRepository.remove(deletedDevice).then(function(isDeleted){
 						if(isDeleted){
 							self.room.devices = _.reject(self.room.devices, function(device){
 								return device.Id == deletedDevice.Id;
@@ -63,7 +64,8 @@
 						return self.newDevice.Type.Id == deviceType.Id;
 					});
 
-					deviceService.add(self.newDevice).then(function(device){
+					deviceRepository.add(self.newDevice).then(function(device){
+						console.log(device);
 						self.room.devices.push(device);
 					});
 

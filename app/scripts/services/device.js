@@ -95,7 +95,7 @@
         	//send command change value
         	device.Value = value;
         	console.log(device);
-        	return this.update(device);
+        	this.update(device);
         }
 			}
     }]);

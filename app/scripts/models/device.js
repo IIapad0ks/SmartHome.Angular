@@ -2,11 +2,12 @@
 
 (function(){
 	var app = angular.module('smartHomeApp')
-    .factory('deviceModel', ['deviceService', 'triggerService', 'actionService', function(deviceService, triggerService, actionService){
+    .factory('deviceModel', ['deviceService', 'deviceRepository', 'triggerService', 'actionService', function(deviceService, deviceRepository, triggerService, actionService){
 			return function(id){
 				var self = this;
 
 				self.deviceService = deviceService;
+				self.deviceRepository = deviceRepository;
 				self.triggerService = triggerService;
 				self.actionService = actionService;
 
@@ -22,7 +23,7 @@
 				self.actions = [];
 				self.triggerDevices = [];
 
-				deviceService.get(id).then(function(device){
+				deviceRepository.get(id).then(function(device){
 					self.device = device;
 
 					triggerService.getByDeviceId(device.Id).then(function(triggers){
@@ -34,13 +35,13 @@
 					});
 
 					if(deviceService.isDevice(device)){
-						deviceService.getSensors().then(function(devices){
+						deviceRepository.getSensors().then(function(devices){
 							self.triggerDevices = devices;
 						});
 					}
 
 					if(deviceService.isSensor(device)){
-						deviceService.getDevices().then(function(devices){
+						deviceRepository.getDevices().then(function(devices){
 							self.triggerDevices = devices;
 						});
 					}
@@ -52,12 +53,12 @@
 
 				self.onDevice = function(){
 					self.device.IsOn = true;
-					deviceService.on(self.device);
+					deviceRepository.on(self.device);
 				}
 
 				self.offDevice = function(){
 					self.device.IsOn = false;
-					deviceService.off(self.device);
+					deviceRepository.off(self.device);
 				}
 
 				self.canTriggerSetValue = function(actionId){

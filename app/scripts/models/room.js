@@ -11,11 +11,12 @@
 
 		.constant('BRIGHTNESS_DEVICE_TYPE_IDS', [2])
 
-    .factory('roomModel', ['roomService', 'deviceService', 'TEMPERATURE_SENSOR_TYPE_ID', 'BRIGHTNESS_SENSOR_TYPE_ID', 'TEMPERATURE_DEVICE_TYPE_IDS', 'BRIGHTNESS_DEVICE_TYPE_IDS', 'DEVICE_TYPE_ID', 'SENSOR_TYPE_ID',  function(roomService, deviceService, temperatureSensorTypeId, brightnessSensorTypeId, temperatureDeviceTypeIds, brightnessDeviceTypeIds, deviceTypeId, sensorTypeId){
+    .factory('roomModel', ['roomService', 'deviceService', 'deviceRepository', 'TEMPERATURE_SENSOR_TYPE_ID', 'BRIGHTNESS_SENSOR_TYPE_ID', 'TEMPERATURE_DEVICE_TYPE_IDS', 'BRIGHTNESS_DEVICE_TYPE_IDS', 'DEVICE_TYPE_ID', 'SENSOR_TYPE_ID',  function(roomService, deviceService, deviceRepository, temperatureSensorTypeId, brightnessSensorTypeId, temperatureDeviceTypeIds, brightnessDeviceTypeIds, deviceTypeId, sensorTypeId){
 			return function(id){
 				var self = this;
 
 				self.deviceService = deviceService;
+				self.deviceRepository = deviceRepository;
 
 				self.room = {};
 				self.room.devices = [];
@@ -29,19 +30,19 @@
 					self.room = room;
 					self.room.devices = [];
 
-					deviceService.getByRoomId(room.Id).then(function(devices){
+					deviceRepository.getAll().then(function(devices){
 						self.room.devices = devices;
 
-						temperatureSensors = _.filter(devices, function(device){
+						temperatureSensors = _.filter(self.room.devices, function(device){
 							return device.Type.Class.Id == sensorTypeId && device.Type.Id == temperatureSensorTypeId && device.IsOn;
 						});
-						brightnessSensors = _.filter(devices, function(device){
+						brightnessSensors = _.filter(self.room.devices, function(device){
 							return device.Type.Class.Id == sensorTypeId && device.Type.Id == brightnessSensorTypeId;
 						});
-						temperatureDevices = _.filter(devices, function(device){
+						temperatureDevices = _.filter(self.room.devices, function(device){
 							return device.Type.Class.Id == deviceTypeId && _.contains(temperatureDeviceTypeIds, device.Type.Id);
 						});
-						brightnessDevices = _.filter(devices, function(device){
+						brightnessDevices = _.filter(self.room.devices, function(device){
 							return device.Type.Class.Id == deviceTypeId && _.contains(brightnessDeviceTypeIds, device.Type.Id);
 						});
 					});
@@ -106,16 +107,16 @@
 					_.each(devices, function(device){
 						device.IsOn = isOn;
 						if(isOn){
-							deviceService.on(device);
+							deviceRepository.on(device);
 						} else {
-							deviceService.off(device);
+							deviceRepository.off(device);
 						}
 					});
 				}
 
 				var setDevicesValue = function(devices, value){
 					_.each(devices, function(device){
-						deviceService.setValue(device, value);
+						deviceRepository.setValue(device, value);
 					});
 				}
 

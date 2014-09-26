@@ -16,7 +16,7 @@
 					<div class="col-lg-3 switch-device">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" ng-checked="{{device.IsOn}}" ng-model="device.IsOn" ng-change="fastAccess.vm.deviceService.toggle(device)">
+								<input type="checkbox" ng-checked="{{device.IsOn}}" ng-model="device.IsOn" ng-change="fastAccess.vm.deviceRepository.toggle(device)">
 								On
 							</label>
 						</div>
@@ -27,7 +27,7 @@
 				</div>
 				<div class="row" ng-show="fastAccess.vm.deviceService.canChangeValue(device)">
 					<div class="col-lg-10 col-lg-offset-1 input-group range-device">
-						<input type="range" class="form-control" min="{{device.Type.MinValue}}" max="{{device.Type.MaxValue}}" step="1" ng-model="device.Value" ng-change="fastAccess.vm.deviceService.setValue(device, device.Value)">
+						<input type="range" class="form-control" min="{{device.Type.MinValue}}" max="{{device.Type.MaxValue}}" step="1" ng-model="device.Value" ng-change="fastAccess.vm.deviceRepository.setValue(device, device.Value)">
 					</div>
 				</div>
 			</div> <!-- end device -->
@@ -117,7 +117,7 @@
 				<div class="row container-device-process" ng-repeat="device in room.vm.room.devices" ng-if="device.Type.NeedTimeControl && device.IsOn">
 					<div class="col-lg-1 col-lg-offset-1 container-device-image" style="background-image: url('/images/{{device.Type.Name}}.png');"></div>
 					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer"><timer device="device"></timer></div>
-					<button type="button" class="col-lg-2 btn btn-danger device-process-btn" ng-click="room.vm.deviceService.off(device)">off</button>
+					<button type="button" class="col-lg-2 btn btn-danger device-process-btn" ng-click="room.vm.deviceRepository.off(device)">off</button>
 				</div> <!-- end device process -->
 			</div>
 		</div> <!-- end room -->

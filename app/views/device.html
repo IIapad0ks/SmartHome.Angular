@@ -6,7 +6,7 @@
 			<div class="row">
 				<label class="col-lg-4 lead">Name</label>
 				<div class="col-lg-8">
-					<input type="text" class="form-control" placeholder="Enter new device name" ng-model="deviceCtrl.vm.device.Name" ng-change="deviceCtrl.vm.deviceService.update(deviceCtrl.vm.device)">
+					<input type="text" class="form-control" placeholder="Enter new device name" ng-model="deviceCtrl.vm.device.Name" ng-change="deviceCtrl.vm.deviceRepository.update(deviceCtrl.vm.device)">
 				</div>
 			</div>
 			<div class="row">
@@ -22,7 +22,7 @@
 				<label class="col-lg-4 lead">Value</label>
 				<span class="col-lg-2 lead">{{deviceCtrl.vm.device.Value}}{{deviceCtrl.vm.device.Type.Symbol}}</span>
 				<div class="col-lg-6 range-device" ng-show="deviceCtrl.vm.deviceService.canChangeValue(deviceCtrl.vm.device)">
-					<input type="range" class="form-control" min="{{deviceCtrl.vm.device.Type.MinValue}}" max="{{deviceCtrl.vm.device.Type.MinValue}}" step="1" ng-model="deviceCtrl.vm.device.Value" ng-change="deviceCtrl.vm.deviceService.setValue(deviceCtrl.vm.device, deviceCtrl.vm.device.Value)">
+					<input type="range" class="form-control" min="{{deviceCtrl.vm.device.Type.MinValue}}" max="{{deviceCtrl.vm.device.Type.MaxValue}}" step="1" ng-model="deviceCtrl.vm.device.Value" ng-change="deviceCtrl.vm.deviceRepository.setValue(deviceCtrl.vm.device, deviceCtrl.vm.device.Value)">
 				</div>
 			</div>
 		</div>
