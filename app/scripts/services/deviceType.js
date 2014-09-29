@@ -3,7 +3,7 @@
 (function(){
 	var app = angular.module('smartHomeApp')
     .service('deviceTypeService', ['Restangular', function(Restangular){
-			var dbDeviceTypes = Restangular.all('deviceType');
+			var dbDeviceTypes = Restangular.all('deviceTypes');
 
 			return {
 				get: function(id){

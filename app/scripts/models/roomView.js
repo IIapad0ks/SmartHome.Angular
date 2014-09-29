@@ -14,7 +14,7 @@
 
 				roomService.get(id).then(function(room){
 					self.room = room;
-					deviceRepository.getByRoomId(room.Id).then(function(devices){
+					deviceRepository.getByRoomId(room._id).then(function(devices){
 						self.room.devices = devices;
 					});
 				});
@@ -23,7 +23,7 @@
 					deviceRepository.remove(deletedDevice).then(function(isDeleted){
 						if(isDeleted){
 							self.room.devices = _.reject(self.room.devices, function(device){
-								return device.Id == deletedDevice.Id;
+								return device._id == deletedDevice._id;
 							});
 						}
 					});
@@ -32,14 +32,13 @@
 				//ADD DEVICE
 				var setDefaultDevice = function(){
 					return {
-						Id: 0,
-						Name: '',
-						Value: 0,
-						IsOn: false,
-						FastAccess: false,
-						Room: self.room,
-						WorkingTime: 0,
-						Type: {}
+						name: '',
+						value: 0,
+						isOn: false,
+						fastAccess: false,
+						room: self.room,
+						workingTime: 0,
+						type: {}
 					}
 				}
 
@@ -60,8 +59,8 @@
 				}
 
 				self.addDevice = function(){
-					self.newDevice.Type = _.find(self.deviceTypes, function(deviceType){
-						return self.newDevice.Type.Id == deviceType.Id;
+					self.newDevice.type = _.find(self.deviceTypes, function(deviceType){
+						return self.newDevice.type._id == deviceType._id;
 					});
 
 					deviceRepository.add(self.newDevice).then(function(device){

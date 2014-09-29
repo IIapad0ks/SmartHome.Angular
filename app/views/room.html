@@ -2,17 +2,17 @@
 <div class="container-fluid">
 	<!-- device row container -->
 	<div class="row container-device-row" ng-repeat="device in room.vm.room.devices">
-		<div class="col-lg-1 container-device-image" style="background-image: url('/images/{{device.Type.Name}}.png');"></div>
-		<a href="#/device/{{device.Id}}">
-			<div class="col-lg-5 lead device-row-name">{{device.Name}}</div>
+		<div class="col-lg-1 container-device-image" style="background-image: url('/images/{{device.type.name}}.png');"></div>
+		<a href="#/device/{{device._id}}">
+			<div class="col-lg-5 lead device-row-name">{{device.name}}</div>
 		</a>
-		<div class="col-lg-1 device-row-value"><span class="lead text-right" ng-show="room.vm.deviceService.hasValue(device)">{{device.Value}}{{device.Type.Symbol}}</span></div>
+		<div class="col-lg-1 device-row-value"><span class="lead text-right" ng-show="room.vm.deviceService.hasValue(device)">{{device.value}}{{device.type.symbol}}</span></div>
 		<div class="col-lg-2 range-device">
-			<input type="range" class="form-control" value="{{device.Value}}" min="{{device.Type.MinValue}}" max="{{device.Type.MaxValue}}" step="1" ng-model="device.Value" ng-change="room.vm.deviceRepository.setValue(device, device.Value)" ng-show="room.vm.deviceService.canChangeValue(device)">
+			<input type="range" class="form-control" value="{{device.value}}" min="{{device.type.minValue}}" max="{{device.type.maxValue}}" step="1" ng-model="device.value" ng-change="room.vm.deviceRepository.setValue(device, device.value)" ng-show="room.vm.deviceService.canChangeValue(device)">
 		</div>
 		<div class="col-lg-2 btn-group device-row-switcher">
-			<button type="button" class="btn btn-default" ng-class="{active:device.IsOn}" ng-click="room.vm.deviceRepository.on(device)">on</button>
-			<button type="button" class="btn btn-default" ng-class="{active:!device.IsOn}" ng-click="room.vm.deviceRepository.off(device)">off</button>
+			<button type="button" class="btn btn-default" ng-class="{active:device.isOn}" ng-click="room.vm.deviceRepository.on(device)">on</button>
+			<button type="button" class="btn btn-default" ng-class="{active:!device.isOn}" ng-click="room.vm.deviceRepository.off(device)">off</button>
 		</div>
 		<button type="button" class="col-lg-1 btn btn-danger device-row-delete" ng-click="room.vm.deleteDevice(device)">delete</button>
 	</div> <!-- end device row -->
@@ -28,14 +28,14 @@
 		  <div class="form-group">
 		    <label for="name" class="col-lg-2 control-label">Name</label>
 		    <div class="col-lg-10">
-		      <input type="text" class="form-control" placeholder="Enter device name" ng-model="room.vm.newDevice.Name" required>
+		      <input type="text" class="form-control" placeholder="Enter device name" ng-model="room.vm.newDevice.name" required>
 		    </div>
 		  </div>
 		  <div class="form-group">
 		    <label for="type" class="col-lg-2 control-label">Type</label>
 		    <div class="col-lg-10">
-		      <select class="form-control" ng-model="room.vm.newDevice.Type.Id" required>
-		      	<option ng-repeat="deviceType in room.vm.deviceTypes" value="{{deviceType.Id}}">{{deviceType.Name}}</option>
+		      <select class="form-control" ng-model="room.vm.newDevice.type._id" required>
+		      	<option ng-repeat="deviceType in room.vm.deviceTypes" value="{{deviceType._id}}">{{deviceType.name}}</option>
 		      </select>
 		    </div>
 		  </div>

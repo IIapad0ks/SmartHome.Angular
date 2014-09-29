@@ -4,7 +4,7 @@
 	var app = angular.module('smartHomeApp')
 
     .service('roomService', ['deviceService', 'Restangular', function(deviceService, Restangular){
-			var dbRooms = Restangular.all('room');
+			var dbRooms = Restangular.all('rooms');
 
 			return {
 				get: function(id){

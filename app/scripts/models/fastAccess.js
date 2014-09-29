@@ -15,29 +15,29 @@
             self.otherDevices = [];
 
             deviceRepository.getAll().then(function(devices){
-                self.fastAccessDevices = _.filter(devices, function(device){ return device.FastAccess; });
-                self.otherDevices = _.filter(devices, function(device){ return !device.FastAccess; });
+                self.fastAccessDevices = _.filter(devices, function(device){ return device.fastAccess; });
+                self.otherDevices = _.filter(devices, function(device){ return !device.fastAccess; });
             });
 
             self.add = function(device){
-                device.FastAccess = true;
+                device.fastAccess = true;
                 deviceRepository.update(device).then(function(isSuccess){
                     if(isSuccess){
                         self.fastAccessDevices.push(device);
                         self.otherDevices = _.reject(self.otherDevices, function(otherDevice){
-                            return otherDevice.Id == device.Id;
+                            return otherDevice._id == device._id;
                         });
                     }
                 });
             }
 
             self.remove = function(device){
-                device.FastAccess = false;
+                device.fastAccess = false;
                 deviceRepository.update(device).then(function(isSuccess){
                     if(isSuccess){
                         self.otherDevices.push(device);
                         self.fastAccessDevices = _.reject(self.fastAccessDevices, function(fastAccessDevice){
-                            return fastAccessDevice.Id == device.Id;
+                            return fastAccessDevice._id == device._id;
                         });
                     }
                 });

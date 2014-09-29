@@ -4,7 +4,7 @@
 	var app = angular.module('smartHomeApp')
 
     .service('triggerService', ['Restangular', '$q', function(Restangular, $q){
-			var dbTriggers = Restangular.all('trigger');
+			var dbTriggers = Restangular.all('triggers');
 
 			return {
 				get: function(id){
@@ -15,7 +15,7 @@
 
 					dbTriggers.getList().then(function(triggers){
 						triggers = _.filter(triggers, function(trigger){
-							return trigger.Device.Id == deviceId || trigger.Sensor.Id == deviceId;
+							return trigger.device._id == deviceId || trigger.sensor._id == deviceId;
 						});
 
 						def.resolve(triggers);
@@ -30,7 +30,7 @@
 					return dbTriggers.customPUT(trigger);
 				},
 				remove: function(trigger){
-					return dbTriggers.all(trigger.Id).remove();
+					return dbTriggers.all(trigger._id).remove();
 				}
 			}
     }]);

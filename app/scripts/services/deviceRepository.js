@@ -17,7 +17,7 @@
 
 					this.getAll().then(function(devices){
 						def.resolve(_.find(devices, function(device){
-							return device.Id == id;
+							return device._id == id;
 						}));
 					});
 
@@ -31,7 +31,7 @@
 
 					this.getAll().then(function(devices){
 						def.resolve(_.filter(devices, function(device){
-							return device.Room.Id == roomId;
+							return device.room._id == roomId;
 						}));
 					});
 
@@ -42,7 +42,7 @@
 
 					this.getAll().then(function(devices){
 						def.resolve(_.filter(devices, function(device){
-							return device.Type.Class.Id == sensorTypeId;
+							return device.type.class._id == sensorTypeId;
 						}));
 					});
 
@@ -53,7 +53,7 @@
 
 					this.getAll().then(function(devices){
 						def.resolve(_.filter(devices, function(device){
-							return device.Type.Class.Id == deviceTypeId;
+							return device.type.class._id == deviceTypeId;
 						}));
 					});
 
@@ -79,7 +79,7 @@
 					deviceService.update(device).then(function(isUpdated){
 						if(isUpdated){
 							devices = _.reject(devices, function(d){
-								return d.Id == device.Id;
+								return d._id == device._id;
 							});
 
 							devices.push(device);
@@ -99,7 +99,7 @@
 					deviceService.remove(device).then(function(isRemoved){
 						if(isRemoved){
 							devices = _.reject(devices, function(d){
-								return d.Id == device.Id;
+								return d._id == device._id;
 							});
 
 							deviceDef = $q.defer();
@@ -113,13 +113,13 @@
 				},
         on: function(device){
         	//send command "on"
-        	device.IsOn = true;
+        	device.isOn = true;
         	return this.update(device);
         },
         off: function(device){
         	//send command "off"
-        	device.IsOn = false;
-        	device.WorkingTime = 0;
+        	device.isOn = false;
+        	device.workingTime = 0;
 
         	var def = $q.defer();
 
@@ -134,7 +134,7 @@
         	return def.promise;
         },
         toggle: function(device){
-        	if(device.IsOn){
+        	if(device.isOn){
         		return this.on(device);
         	} else {
         		return this.off(device);
@@ -142,7 +142,7 @@
         },
         setValue: function(device, value){
         	//send command change value
-        	device.Value = value;
+        	device.value = value;
         	return this.update(device);
         }
 			}

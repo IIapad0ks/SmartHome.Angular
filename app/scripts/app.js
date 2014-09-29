@@ -19,7 +19,7 @@ angular
     'restangular'
   ])
   .config(['$routeProvider', 'RestangularProvider', function ($routeProvider, RestangularProvider) {
-    RestangularProvider.setBaseUrl("http://localhost:53605/api");
+    RestangularProvider.setBaseUrl("http://localhost:3000/api");
 
     $routeProvider
       .when('/', {

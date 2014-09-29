@@ -18,7 +18,7 @@
 				},
 				stopDeviceTimer: function(device){
 	    		var deviceTimer = _.find(deviceTimers, function(deviceTimer){
-	    			return deviceTimer.device.Id == device.Id;
+	    			return deviceTimer.device._id == device._id;
 	    		});
 
 	    		if(!angular.isDefined(deviceTimer)){
@@ -28,7 +28,7 @@
 	    		$interval.cancel(deviceTimer.timer);
 
 	    		deviceTimers = _.reject(deviceTimers, function(deviceTimer){
-	    			return deviceTimer.device.Id == device.Id;
+	    			return deviceTimer.device._id == device._id;
 	    		});
 	    	}
 			}
@@ -50,7 +50,7 @@
 	    	},
 	    	link: function($scope){
 	    		var updateTimer = function(){
-	    			var sec_num = $scope.device.WorkingTime;
+	    			var sec_num = $scope.device.workingTime;
 
 				    var hours   = Math.floor(sec_num / 3600);
 				    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
@@ -75,7 +75,7 @@
 	    			device: $scope.device,
 	    			interval: 1000,
 	    			fn: function(){
-		    			$scope.device.WorkingTime += 1;
+		    			$scope.device.workingTime += 1;
 		    			updateTimer();
 		    		}
 	    		});

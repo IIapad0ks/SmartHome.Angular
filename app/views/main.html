@@ -7,16 +7,16 @@
 				<div class="row">
 					<div class="col-lg-7 container-device-info">
 						<div class="row">
-							<div class="col-lg-12 container-device-image" style="background-image: url('/images/{{device.Type.Name}}.png');"></div>
+							<div class="col-lg-12 container-device-image" style="background-image: url('/images/{{device.type.name}}.png');"></div>
 						</div>
 						<div class="row">
-							<span class="center-block text-center" ng-show="fastAccess.vm.deviceService.hasValue(device)">{{device.Value}}{{device.Type.Symbol}}</span>
+							<span class="center-block text-center" ng-show="fastAccess.vm.deviceService.hasValue(device)">{{device.value}}{{device.type.symbol}}</span>
 						</div>
 					</div>
 					<div class="col-lg-3 switch-device">
 						<div class="checkbox">
 							<label>
-								<input type="checkbox" ng-checked="{{device.IsOn}}" ng-model="device.IsOn" ng-change="fastAccess.vm.deviceRepository.toggle(device)">
+								<input type="checkbox" ng-checked="{{device.isOn}}" ng-model="device.isOn" ng-change="fastAccess.vm.deviceRepository.toggle(device)">
 								On
 							</label>
 						</div>
@@ -27,7 +27,7 @@
 				</div>
 				<div class="row" ng-show="fastAccess.vm.deviceService.canChangeValue(device)">
 					<div class="col-lg-10 col-lg-offset-1 input-group range-device">
-						<input type="range" class="form-control" min="{{device.Type.MinValue}}" max="{{device.Type.MaxValue}}" step="1" ng-model="device.Value" ng-change="fastAccess.vm.deviceRepository.setValue(device, device.Value)">
+						<input type="range" class="form-control" min="{{device.type.minValue}}" max="{{device.type.maxValue}}" step="1" ng-model="device.value" ng-change="fastAccess.vm.deviceRepository.setValue(device, device.value)">
 					</div>
 				</div>
 			</div> <!-- end device -->
@@ -38,7 +38,7 @@
 				<div class="dropdown">
 				  <button class="btn btn-default btn-block dropdown-toggle" type="button" id="fastAccessAddDropdown" data-toggle="dropdown">+</button>
 				  <ul class="dropdown-menu" role="menu" aria-labelledby="fastAccessAddDropdown">
-				    <li role="presentation" ng-repeat="device in fastAccess.vm.otherDevices"><a role="menuitem" ng-click="fastAccess.vm.add(device)">{{device.Name}}</a></li>
+				    <li role="presentation" ng-repeat="device in fastAccess.vm.otherDevices"><a role="menuitem" ng-click="fastAccess.vm.add(device)">{{device.name}}</a></li>
 				  </ul>
 				</div> <!-- end add new -->
 			</div>
@@ -110,12 +110,12 @@
 						</div>
 					</div> <!-- end room temperature controller -->
 				</div>
-				<a role="button" class="col-lg-2 btn btn-info" href="#/room/{{room.vm.room.Id}}">Go to room</a>
+				<a role="button" class="col-lg-2 btn btn-info" href="#/room/{{room.vm.room._id}}">Go to room</a>
 			</div>
 			<div class="row">
 				<!-- device process container -->
-				<div class="row container-device-process" ng-repeat="device in room.vm.room.devices" ng-if="device.Type.NeedTimeControl && device.IsOn">
-					<div class="col-lg-1 col-lg-offset-1 container-device-image" style="background-image: url('/images/{{device.Type.Name}}.png');"></div>
+				<div class="row container-device-process" ng-repeat="device in room.vm.room.devices" ng-if="device.type.needTimeControl && device.isOn">
+					<div class="col-lg-1 col-lg-offset-1 container-device-image" style="background-image: url('/images/{{device.type.name}}.png');"></div>
 					<div class="col-lg-6 col-lg-offset-1 lead device-process-timer"><timer device="device"></timer></div>
 					<button type="button" class="col-lg-2 btn btn-danger device-process-btn" ng-click="room.vm.deviceRepository.off(device)">off</button>
 				</div> <!-- end device process -->
